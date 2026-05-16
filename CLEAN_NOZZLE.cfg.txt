@@ -1,0 +1,66 @@
+[gcode_macro CLEAN_NOZZLE]
+description: Nozzle clean and park at purge bucket
+gcode:
+
+    # ---- Brush / Bucket Settings ----
+    {% set HOTEND_TEMP = 240 %}
+    {% set WIPE_SPEED = 12000 %}
+    {% set MOVE_SPEED = 12000 %}
+    {% set Z_SPEED = 3000 %}
+
+    # Brush wipe area
+    {% set WIPE_X1 = 270 %}
+    {% set WIPE_X2 = 320 %}
+    {% set WIPE_Y  = 350 %}
+
+    # Purge bucket park position
+    {% set PARK_X = 340 %}
+    {% set PARK_Y = 350 %}
+
+    {% set WIPE_Z  = 1.0 %}
+    {% set SAFE_Z  = 10 %}
+    {% set WIPE_COUNT = 6 %}
+
+    {% if printer.toolhead.homed_axes != "xyz" %}
+        M117 Homing printer
+        G28
+    {% endif %}
+
+    {% if not printer.quad_gantry_level.applied %}
+        M117 Running QGL
+        QUAD_GANTRY_LEVEL
+        G28 Z
+    {% endif %}
+
+    G90
+
+    G1 Z{SAFE_Z} F{Z_SPEED}
+
+    # Move to brush
+    M117 Moving to brush
+    G1 X{WIPE_X1} Y{WIPE_Y} F{MOVE_SPEED}
+
+    # Heat nozzle
+    M117 Heating nozzle
+    M104 S{HOTEND_TEMP}
+    TEMPERATURE_WAIT SENSOR=extruder MINIMUM={HOTEND_TEMP-20} MAXIMUM={HOTEND_TEMP+15}
+
+    # Wipe nozzle
+    G1 Z{WIPE_Z} F1200
+
+    M117 Cleaning nozzle
+    {% for wipe in range(WIPE_COUNT) %}
+        G1 X{WIPE_X2} F{WIPE_SPEED}
+        G1 X{WIPE_X1} F{WIPE_SPEED}
+    {% endfor %}
+
+    # Lift nozzle
+    G1 Z{SAFE_Z} F{Z_SPEED}
+
+    # Park at purge bucket
+    M117 Moving to purge bucket
+    G1 X{PARK_X} Y{PARK_Y} F{MOVE_SPEED}
+
+    M104 S0  #cool nozzle
+
+    M117 Nozzle clean complete
