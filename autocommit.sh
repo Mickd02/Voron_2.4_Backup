@@ -82,13 +82,27 @@ fi
 # git remote set-url origin https://XXXXXXXXXXX@github.com/EricZimmerman/Voron24Configs.git/
 # Note that that format is for changing things after the repository is in use, vs initially
 
-push_config(){
-  cd $config_folder
-  git pull origin $branch --no-rebase
-  git add .
-  current_date=$(date +"%Y-%m-%d %T")
-  git commit -m "Autocommit from $current_date" -m "$m1" -m "$m2" -m "$m3" -m "$m4"
-  git push origin $branch
+
+ push_config(){
+  cd "$config_folder" || exit 1
+
+  git pull origin "$branch" --no-rebase
+  git add -A
+
+  if git diff --cached --quiet; then
+    echo "No configuration changes to back up."
+  else
+    current_date=$(date +"%Y-%m-%d %H:%M:%S")
+
+    git commit \
+      -m "Voron 2.4 Backup - $current_date" \
+      -m "$m1" \
+      -m "$m2" \
+      -m "$m3" \
+      -m "$m4"
+
+    git push origin "$branch"
+  fi
 }
 
 grab_version
