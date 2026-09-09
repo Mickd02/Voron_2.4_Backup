@@ -22,34 +22,30 @@ gcode:
   # Begin heating the bed and nozzle.
   M140 S{BED}
   M104 S{PREHEAT}
-  #M109 S{PREHEAT}
 
   TEMPERATURE_WAIT SENSOR=extruder MINIMUM={PREHEAT-20} MAXIMUM={PREHEAT+15}
 
   # Initial Cartographer scan homing.
   _CHOME
 
-      # Level the gantry pre heat soak
+
+
+  # Level the gantry while the bed is at printing temperature.
   _CQGL
 
-
-  # Bed must be at printing temperature before QGL, Touch and mesh.
-  M190 S{BED}
-
-      # Level the gantry.
-  _CQGL
-
-  # Clean the nozzle while it is warm.
+  # First clean: heat to the configured hot-clean temperature and scrub.
   CLEAN_NOZZLE
 
-      # Clean the nozzle while it is warm at 150 degrees
+  # Second clean: fan-cool to 150C, then scrub again at 150C.
   CLEAN_NOZZLE2
 
-  # Touch homing should be performed with the nozzle at 150°C.
+  # Confirm the nozzle is stable at the Touch temperature.
   M109 S150
 
+    # Bring the bed fully to temperature before levelling.
+  M190 S{BED}
 
-  
+  # Establish the final, accurate Z zero after QGL and nozzle cleaning.
   CARTOGRAPHER_TOUCH_HOME
 
   # Create the mesh after the final Touch home.

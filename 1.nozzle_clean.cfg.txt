@@ -3,7 +3,7 @@
 #####################################################################
 
 [gcode_macro CLEAN_NOZZLE]
-description: Nozzle clean and park at purge bucket
+description: Hot nozzle clean and park at purge bucket
 gcode:
     {% set S = printer["gcode_macro PRINTER_SETTINGS"] %}
 
@@ -27,7 +27,6 @@ gcode:
     G1 X{S.purge_x} Y{S.brush_y} F{S.fast_move_speed}
 
     M117 Heating nozzle
-    ###### clean temp located in printer_setting.cfg###################
     M104 S{S.clean_temp}
     TEMPERATURE_WAIT SENSOR=extruder MINIMUM={S.clean_temp-15} MAXIMUM={S.clean_temp+10}
 

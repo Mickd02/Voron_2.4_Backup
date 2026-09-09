@@ -228,6 +228,7 @@ NOTES
   Klipper extension installed
 - Some commands may differ depending on printer setup
 
+Something like changing line 17 of purge.cfg to have Y{start_y+rand_y} and adding a line {% rand_y = random.randint(-2,2) %}
 ==================================================
 END OF FILE
 ==================================================
