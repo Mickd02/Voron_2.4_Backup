@@ -6,12 +6,6 @@
 description: Purge into bucket, wipe nozzle, then ready for print
 gcode:
     {% set S = printer["gcode_macro PRINTER_SETTINGS"] %}
-    {% set X_MIN = (S.brush_x_min * 10)|int %}
-    {% set X_MAX = (S.brush_x_max * 10)|int %}
-    {% set Y_MIN = (S.brush_y_min * 10)|int %}
-    {% set Y_MAX = (S.brush_y_max * 10)|int %}
-    {% set START_X = (range(X_MIN, X_MAX + 1)|random) / 10.0 %}
-    {% set START_Y = (range(Y_MIN, Y_MAX + 1)|random) / 10.0 %}
 
     G90
     M83
@@ -32,13 +26,13 @@ gcode:
     M117 Wiping nozzle
 
     {% for cycle in range(S.bucket_wipe_cycles|int) %}
-        G1 X{START_X} Y{START_Y} F{S.move_speed}
+        G1 X{S.brush_x1} Y{S.brush_y} F{S.move_speed}
         G1 Z{S.wipe_z} F1200
 
         {% for wipe in range(S.bucket_wipe_passes|int) %}
-            G1 X{(range(X_MAX-20, X_MAX+1)|random)/10.0} Y{(range(Y_MIN, Y_MAX+1)|random)/10.0} F{S.wipe_speed}
-            G1 X{(range(X_MIN, X_MIN+21)|random)/10.0} Y{(range(Y_MIN, Y_MAX+1)|random)/10.0} F{S.wipe_speed}
-            G1 X{(range(X_MAX-20, X_MAX+1)|random)/10.0} Y{(range(Y_MIN, Y_MAX+1)|random)/10.0} F{S.wipe_speed}
+            G1 X{S.brush_x2} F{S.wipe_speed}
+            G1 X{S.brush_x1} F{S.wipe_speed}
+            G1 X{S.brush_x2} F{S.wipe_speed}
         {% endfor %}
 
         G1 Z{S.safe_z} F{S.z_speed}

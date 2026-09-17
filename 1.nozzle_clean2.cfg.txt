@@ -1,9 +1,9 @@
 #####################################################################
-# Final Nozzle Clean for Cartographer Touch
+# Nozzle Clean
 #####################################################################
 
 [gcode_macro CLEAN_NOZZLE2]
-description: Cool nozzle to 150C, scrub, and park at purge bucket
+description: Nozzle clean and park at purge bucket
 gcode:
     {% set S = printer["gcode_macro PRINTER_SETTINGS"] %}
 
@@ -23,18 +23,22 @@ gcode:
 
     G1 Z{S.safe_z} F{S.z_speed}
 
-    M117 Moving above brush
+    M117 Moving brush to hold
     G1 X{S.purge_x} Y{S.brush_y} F{S.fast_move_speed}
+
+    M117 Heating nozzle
+    M104 S{S.clean_temp2}
+    #TEMPERATURE_WAIT SENSOR=extruder MINIMUM={S.clean_temp2-5} MAXIMUM={S.clean_temp2+5}
 
     M117 Moving to brush
     G1 X{S.brush_x1} Y{S.brush_y} F{S.fast_move_speed}
 
-    # Cool while safely above the brush, then scrub at Touch temperature.
-    COOL_NOZZLE TARGET=150
+        # Cool while safely above the brush, then scrub at Touch temperature.
+    COOL_NOZZLE TARGET=170
 
     G1 Z{S.clean_wipe_z} F1200
 
-    M117 Final cleaning at 150C
+    M117 Cleaning nozzle
 
     {% for cycle in range(S.clean_wipe_cycles|int) %}
         {% for wipe in range(S.clean_wipe_passes|int) %}
@@ -55,23 +59,3 @@ gcode:
     M117 Nozzle clean complete
     G4 P2000
     M117
-
-
-[gcode_macro COOL_NOZZLE]
-description: Cool hotend to target using the part cooling fans
-gcode:
-    {% set TARGET = params.TARGET|default(150)|float %}
-    {% set CURRENT = printer.extruder.temperature|float %}
-
-    # This helper is called as a separate macro so CURRENT is evaluated
-    # after the hot-clean macro has finished.
-    M104 S{TARGET}
-
-    {% if CURRENT > TARGET + 2 %}
-        M117 Cooling nozzle to {TARGET|int}C
-        M106 S255
-        TEMPERATURE_WAIT SENSOR=extruder MAXIMUM={TARGET+2}
-        M107
-    {% else %}
-        M107
-    {% endif %}

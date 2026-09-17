@@ -23,20 +23,15 @@ variable_service_z: 25
 # ---- Brush / bucket positions ----
 variable_purge_x: 125
 variable_purge_y: 2
-# Silicone scrub block measured area: X146-207, Y0-7.
-# The working limits below keep the nozzle 1 mm inside those edges.
-# CLEAN_NOZZLE, CLEAN_NOZZLE2 and PURGE_TO_BUCKET select new random
-# X/Y points inside this area for each wiping stroke.
-variable_brush_x_min: 144
-variable_brush_x_max: 210
-variable_brush_y_min: 1
-variable_brush_y_max: 6
-variable_brush_x_end: 215
+variable_brush_x1: 138
+variable_brush_x2: 200
+variable_brush_x_end: 220
+variable_brush_y: 0.5
 
 # ---- Heights ----
 variable_safe_z: 10
 variable_wipe_z: 0.4
-variable_clean_wipe_z: 0.8
+variable_clean_wipe_z: 0.6
 variable_purge_z: 2
 
 # ---- Speeds ----
